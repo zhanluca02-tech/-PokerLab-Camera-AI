@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b7d66">
+<title>PokerLab Camera AI Coach</title>
+<style>
+:root{--bg:#24212a;--top:#2d2933;--felt1:#0ea184;--felt2:#075e4c;--panel:#f7faf8;--text:#102019;--muted:#5d796e;--line:#d7e3dd;--accent:#19c88e;--danger:#ed6d6d;--gold:#dfb34c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;color:#fff}button,input,select{font:inherit}
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:#2a2730;overflow:hidden}
+.topbar{padding:calc(env(safe-area-inset-top,0px) + 8px) 14px 8px;height:78px;background:var(--top);display:flex;align-items:center;gap:10px}
+.icon{width:44px;height:44px;border:0;background:transparent;color:#fff;font-size:23px}.brand{flex:1;text-align:center}.brand b{display:block;font-size:18px}.brand small{display:block;color:rgba(255,255,255,.63);margin-top:3px}
+.camera{padding:10px 12px;background:#0a1a15}.camframe{position:relative;width:62%;max-width:250px;aspect-ratio:9/16;margin:0 auto;border-radius:20px;overflow:hidden;background:#020504;border:1px solid rgba(255,255,255,.14)}
+.camframe video{width:100%;height:100%;object-fit:cover;display:block}.scan{position:absolute;left:9%;right:9%;height:2px;top:16%;background:rgba(88,255,198,.8);box-shadow:0 0 12px rgba(88,255,198,.8);animation:scan 2.1s linear infinite}@keyframes scan{0%{top:16%}50%{top:82%}100%{top:16%}}
+.camrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.camrow button{min-height:44px;border:0;border-radius:12px;font-weight:900}.start{background:var(--accent);color:#062118}.stop{background:#fff;color:#173027}.status{font-size:11px;line-height:1.5;color:rgba(255,255,255,.72);margin-top:8px;text-align:center}
+.stage{position:relative;background:linear-gradient(180deg,var(--felt1),var(--felt2));padding-bottom:12px}.tablewrap{position:relative;height:485px;overflow:hidden}.table{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:94%;height:335px;border-radius:50%/44%;background:radial-gradient(circle at 50% 40%,rgba(120,255,220,.22),rgba(0,142,112,.9) 46%,rgba(0,78,61,.98));border:1px solid rgba(255,255,255,.11);box-shadow:inset 0 0 0 14px rgba(0,0,0,.06),inset 0 -20px 50px rgba(0,0,0,.18),0 20px 48px rgba(0,0,0,.22)}
+.table:after{content:"";position:absolute;inset:16px;border-radius:50%/44%;border:1px solid rgba(255,255,255,.09)}.pot{position:absolute;left:50%;top:20%;transform:translateX(-50%);z-index:4;text-align:center}.pot b{display:inline-block;padding:6px 14px;border-radius:8px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.13)}.pot small{display:block;margin-top:6px;color:rgba(255,255,255,.78)}
+.board{position:absolute;left:50%;top:34%;transform:translateX(-50%);display:flex;gap:5px;z-index:4}.card{width:44px;height:61px;border-radius:10px;border:2px dashed rgba(255,255,255,.36);background:rgba(255,255,255,.08);color:#fff;font-size:27px;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center}.card.filled{background:#fff;border-style:solid;border-color:#fff;color:#13221c}.card.red{color:#d62f47}.rank{font-size:19px;line-height:1}.suit{font-size:21px;line-height:1.1;margin-top:2px}
+.hero{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:250px;text-align:center;z-index:6}.avatar{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;margin:0 auto;background:linear-gradient(135deg,#efd5b2,#9b664c);font-weight:900}.hero-cards{display:flex;justify-content:center;gap:10px;margin-top:9px}.coach{margin:7px auto 0;width:min(90%,345px);padding:10px 12px;border-radius:16px;background:rgba(4,20,15,.79);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px)}.coach .action{font-size:28px;font-weight:900}.coach .sub{font-size:12px;line-height:1.5;color:rgba(255,255,255,.76);margin-top:4px}
+.badges{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:7px}.badge{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.08);font-size:11px}
+.panel{background:var(--panel);color:var(--text);border-radius:24px 24px 0 0;padding:12px 14px calc(18px + env(safe-area-inset-bottom,0px))}.handle{width:52px;height:5px;background:#cdd9d4;border-radius:99px;margin:0 auto 10px}.head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.head h2{margin:3px 0 0;font-size:20px}.eyebrow{font-size:10px;letter-spacing:.17em;font-weight:900;color:#0d9670}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.field{background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px}.field span{display:block;font-size:11px;color:var(--muted)}.field b{display:block;font-size:18px;margin-top:5px}.field input{width:100%;min-height:40px;border:1px solid var(--line);border-radius:10px;padding:7px 8px;font-size:16px;margin-top:6px}.field.wide{grid-column:1/-1}
+.ai-result{margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px}.ai-result .big{font-size:25px;font-weight:900;text-align:center}.ai-result p{font-size:12px;line-height:1.6;color:var(--muted);margin:6px 0 0;text-align:center}
+.ghost{border:1px solid var(--line);background:#fff;color:#355247;border-radius:12px;padding:9px 12px}
+@media(prefers-reduced-motion:reduce){.scan{animation:none;top:50%}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <button class="icon" type="button">☰</button>
+    <div class="brand"><b>PokerLab Camera AI</b><small>实时识别 · 概率训练</small></div>
+    <button class="icon" id="resetBtn" type="button">↺</button>
+  </div>
+
+  <section class="camera">
+    <div class="camframe">
+      <video id="video" autoplay playsinline muted></video>
+      <div class="scan"></div>
+    </div>
+    <div class="camrow">
+      <button class="start" id="startBtn" type="button">开始实时 AI</button>
+      <button class="stop" id="stopBtn" type="button" disabled>停止</button>
+    </div>
+    <div class="status" id="camStatus">部署到 HTTPS 后，用 Safari 允许摄像头。AI 会约每 2 秒分析一帧。</div>
+  </section>
+
+  <section class="stage">
+    <div class="tablewrap">
+      <div class="table">
+        <div class="pot"><b>底池 <span id="potText">—</span></b><small id="streetText">等待识别</small></div>
+        <div class="board" id="board"></div>
+      </div>
+
+      <div class="hero">
+        <div class="avatar">PL</div>
+        <div class="hero-cards" id="heroCards"></div>
+        <div class="coach">
+          <div class="action" id="actionText">等待 AI</div>
+          <div class="sub" id="coachText">摄像头识别到牌面后，这里会更新概率与训练说明。</div>
+          <div class="badges">
+            <span class="badge" id="winBadge">胜率 —</span>
+            <span class="badge" id="oddsBadge">底池赔率 —</span>
+            <span class="badge" id="outsBadge">Outs —</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="handle"></div>
+    <div class="head">
+      <div><div class="eyebrow">AI READOUT</div><h2>实时识别结果</h2></div>
+      <button class="ghost" id="manualRefresh" type="button">立即分析</button>
+    </div>
+
+    <div class="grid">
+      <div class="field"><span>手牌</span><b id="heroText">—</b></div>
+      <div class="field"><span>公共牌</span><b id="boardText">—</b></div>
+      <div class="field"><span>底池</span><b id="potRead">—</b></div>
+      <div class="field"><span>需要跟注</span><b id="callRead">—</b></div>
+      <div class="field"><span>桌上玩家</span><b id="playersRead">—</b></div>
+      <div class="field"><span>识别置信度</span><b id="confRead">—</b></div>
+      <div class="field wide">
+        <span>如果 AI 没看清金额，可手动修正“你要跟注”</span>
+        <input id="manualCall" type="number" min="0" step="1" placeholder="例如 25">
+      </div>
+    </div>
+
+    <div class="ai-result">
+      <div class="big" id="analysisTitle">等待实时识别</div>
+      <p id="analysisBody">这个版本会把摄像头画面送到你的 AI 后端，返回牌面、金额和玩家人数，再由前端计算概率。</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let stream=null,timer=null,busy=false,lastAnalysis=null;
+const CARD_RE=/^(10|[2-9AJQK])[shdc]$/i;
+const SUIT_SYM={s:'♠',h:'♥',d:'♦',c:'♣'};
+
+function prettyCard(c){
+  if(!c||!CARD_RE.test(c)) return '?';
+  const r=c.slice(0,-1).toUpperCase();
+  const s=c.slice(-1).toLowerCase();
+  return r+SUIT_SYM[s];
+}
+function cardHTML(c){
+  if(!c||!CARD_RE.test(c)) return '<div class="card">+</div>';
+  const r=c.slice(0,-1).toUpperCase(), s=c.slice(-1).toLowerCase();
+  const red=s==='h'||s==='d';
+  return `<div class="card filled ${red?'red':''}"><span class="rank">${r}</span><span class="suit">${SUIT_SYM[s]}</span></div>`;
+}
+function renderCards(hero=[],board=[]){
+  $('#heroCards').innerHTML=[0,1].map(i=>cardHTML(hero[i])).join('');
+  $('#board').innerHTML=[0,1,2,3,4].map(i=>cardHTML(board[i])).join('');
+  $('#heroText').textContent=hero.length?hero.map(prettyCard).join(' '):'—';
+  $('#boardText').textContent=board.length?board.map(prettyCard).join(' '):'—';
+}
+
+function currentCall(){
+  const manual=parseFloat($('#manualCall').value);
+  if(Number.isFinite(manual)) return manual;
+  return Number(lastAnalysis?.to_call)||0;
+}
+
+function updateCoach(a){
+  lastAnalysis=a;
+  renderCards(a.hero_cards||[],a.board_cards||[]);
+  $('#potText').textContent=a.pot??'—';
+  $('#potRead').textContent=a.pot??'—';
+  $('#callRead').textContent=a.to_call??'—';
+  $('#playersRead').textContent=a.players??'—';
+  $('#confRead').textContent=a.confidence!=null?Math.round(a.confidence*100)+'%':'—';
+  $('#streetText').textContent=a.street||'识别中';
+
+  const win=a.win_rate;
+  const outs=a.outs;
+  const pot=Number(a.pot)||0;
+  const call=currentCall();
+  const potOdds=call>0?call/(pot+call)*100:0;
+
+  $('#winBadge').textContent='胜率 '+(win!=null?Number(win).toFixed(1)+'%':'—');
+  $('#oddsBadge').textContent='底池赔率 '+potOdds.toFixed(1)+'%';
+  $('#outsBadge').textContent='Outs '+(outs!=null?outs:'—');
+
+  let title='继续观察';
+  let body=a.explanation||'AI 正在分析。';
+  if(a.training_action) title=a.training_action;
+
+  $('#actionText').textContent=title;
+  $('#coachText').textContent=body;
+  $('#analysisTitle').textContent=title;
+  $('#analysisBody').textContent=body;
+}
+
+async function captureBlob(){
+  const v=$('#video');
+  if(!v.videoWidth) throw new Error('camera_not_ready');
+  const c=document.createElement('canvas');
+  c.width=v.videoWidth;c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+  return await new Promise(res=>c.toBlob(res,'image/jpeg',0.82));
+}
+
+async function analyzeFrame(){
+  if(busy||!stream)return;
+  busy=true;
+  try{
+    $('#camStatus').textContent='AI 正在分析当前画面…';
+    const blob=await captureBlob();
+    const fd=new FormData();
+    fd.append('frame',blob,'frame.jpg');
+    const manualCall=parseFloat($('#manualCall').value);
+    if(Number.isFinite(manualCall)) fd.append('manual_to_call',String(manualCall));
+    const r=await fetch('/api/analyze-table',{method:'POST',body:fd});
+    if(!r.ok) throw new Error('server_'+r.status);
+    const data=await r.json();
+    updateCoach(data);
+    $('#camStatus').textContent='实时 AI 已连接 · 下一帧约 2 秒后分析';
+  }catch(e){
+    $('#camStatus').textContent='AI 分析失败：请确认后端已启动，并且网站使用 HTTPS。';
+  }finally{busy=false}
+}
+
+async function start(){
+  if(!window.isSecureContext&&location.hostname!=='localhost'){
+    $('#camStatus').textContent='实时摄像头需要 HTTPS。';
+    return;
+  }
+  try{
+    stop();
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},
+      audio:false
+    });
+    $('#video').srcObject=stream;
+    await $('#video').play();
+    const track=stream.getVideoTracks()[0];
+    try{
+      const caps=track.getCapabilities?.();
+      if(caps?.zoom) await track.applyConstraints({advanced:[{zoom:caps.zoom.min}]});
+    }catch(e){}
+    $('#startBtn').disabled=true;$('#stopBtn').disabled=false;
+    $('#camStatus').textContent='摄像头已开启，AI 即将开始实时分析。';
+    await analyzeFrame();
+    timer=setInterval(analyzeFrame,2000);
+  }catch(e){
+    $('#camStatus').textContent='无法开启摄像头，请检查 Safari 摄像头权限。';
+  }
+}
+function stop(){
+  clearInterval(timer);timer=null;
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  $('#video').srcObject=null;
+  $('#startBtn').disabled=false;$('#stopBtn').disabled=true;
+}
+$('#startBtn').addEventListener('click',start);
+$('#stopBtn').addEventListener('click',stop);
+$('#manualRefresh').addEventListener('click',analyzeFrame);
+$('#manualCall').addEventListener('input',()=>lastAnalysis&&updateCoach(lastAnalysis));
+$('#resetBtn').addEventListener('click',()=>{renderCards([],[]);lastAnalysis=null;$('#actionText').textContent='等待 AI';$('#coachText').textContent='摄像头识别到牌面后，这里会更新概率与训练说明。'});
+window.addEventListener('pagehide',stop);
+renderCards([],[]);
+</script>
+</body>
+</html>
